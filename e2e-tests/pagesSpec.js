@@ -58,4 +58,55 @@ describe("Test Pages", function() {
     browser.get(ROOT + "/?q=x");
     expect(element.all(by.css('.url-listing')).count()).toBe(0);
   });
+
+  it('should edit created url', function() {
+
+    var originalTitle = "url one";
+
+    var originalUrl = "http://url-one.com";
+
+    createUrlEntry(originalTitle, originalUrl);
+
+    browser.get(ROOT + "/");
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).toContain(originalTitle);
+
+    element(by.linkText('Edit')).click();
+
+    expect(browser.getLocationAbsUrl()).toMatch(/#\/edit\/[0-9]{1}/);
+
+    var editedTitle = 'edited';
+
+    element(by.model('formCtrl.form.title')).clear();
+
+    element(by.model('formCtrl.form.title')).sendKeys(editedTitle);
+
+    element(by.css('input[type=submit]')).click();
+
+    browser.get(ROOT + "/");
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).toContain(editedTitle);
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).not.toContain(originalTitle);
+
+  });
+
+  it('should edit created url', function() {
+
+    createUrlEntry("url one", "http://url-one.com");
+
+    browser.get(ROOT + "/");
+
+    expect(element.all(by.css('.url-listing')).count()).toBe(1);
+
+    browser.debugger();
+
+    element(by.css('.btn-danger')).click();
+
+    browser.get(ROOT + "/");
+
+    expect(element.all(by.css('.url-listing')).count()).toBe(0);
+
+  });
+
 });
