@@ -30,21 +30,22 @@ describe("Test Pages", function() {
     var customTitle = 'title-' + Math.random();
     var customUrl = 'http://my-new-website.com/' + Math.random();
 
-    createUrlEntry(customTitle, customUrl).then(function() {
-      browser.getLocationAbsUrl().then(function(url) {
-        expect(url).toMatch(/#\/urls/);
-        expect(element.all(by.css('.url-listing')).count()).toBe(1);
+    createUrlEntry(customTitle, customUrl);
 
-        expect(element(by.css('.url-listing .listing-title')).getText()).toContain(customTitle);
-        expect(element(by.css('.url-listing .listing-url')).getText()).toContain(customUrl);
+    expect(browser.getLocationAbsUrl()).toMatch(/#\/urls/);
 
-        expect(element.all(by.css('.empty-url-listing')).count()).toBe(0);
-      });
-    });
+    expect(element.all(by.css('.url-listing')).count()).toBe(1);
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).toContain(customTitle);
+    expect(element(by.css('.url-listing .listing-url')).getText()).toContain(customUrl);
+
+    expect(element.all(by.css('.empty-url-listing')).count()).toBe(0);
+
   });
+          
 
   it('should search based off of the URL', function() {
-    createUrlEntry("url one", "http://url-one.com")
+    createUrlEntry("url one", "http://url-one.com");
     createUrlEntry("url two", "http://url-two.com");
     createUrlEntry("url three", "http://url-three.com");
 
@@ -57,4 +58,55 @@ describe("Test Pages", function() {
     browser.get(ROOT + "/?q=x");
     expect(element.all(by.css('.url-listing')).count()).toBe(0);
   });
+
+  it('should edit created url', function() {
+
+    var originalTitle = "url one";
+
+    var originalUrl = "http://url-one.com";
+
+    createUrlEntry(originalTitle, originalUrl);
+
+    browser.get(ROOT + "/");
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).toContain(originalTitle);
+
+    element(by.linkText('Edit')).click();
+
+    expect(browser.getLocationAbsUrl()).toMatch(/#\/edit\/[0-9]{1}/);
+
+    var editedTitle = 'edited';
+
+    element(by.model('formCtrl.form.title')).clear();
+
+    element(by.model('formCtrl.form.title')).sendKeys(editedTitle);
+
+    element(by.css('input[type=submit]')).click();
+
+    browser.get(ROOT + "/");
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).toContain(editedTitle);
+
+    expect(element(by.css('.url-listing .listing-title')).getText()).not.toContain(originalTitle);
+
+  });
+
+  it('should edit created url', function() {
+
+    createUrlEntry("url one", "http://url-one.com");
+
+    browser.get(ROOT + "/");
+
+    expect(element.all(by.css('.url-listing')).count()).toBe(1);
+
+    browser.debugger();
+
+    element(by.css('.btn-danger')).click();
+
+    browser.get(ROOT + "/");
+
+    expect(element.all(by.css('.url-listing')).count()).toBe(0);
+
+  });
+
 });
