@@ -6,7 +6,6 @@
 2. Clone the repo and hop into the directory.
 
 ```bash
-git clone git@github.com:Thinkful/thinkful-protractor-app.git
 cd thinkful-protractor-app
 ```
 
